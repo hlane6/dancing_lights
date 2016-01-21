@@ -1,0 +1,45 @@
+from dance import dance
+import audio
+import numpy
+import os
+
+recent = False
+timeout = 0
+
+commands = {
+        "KEY_F",
+        "KEY_F2",
+        "KEY_F3",
+        "KEY_F5",
+        "KEY_F6",
+        "KEY_F7",
+        "KEY_F9",
+        "KEY_F10",
+        "KEY_F11",
+        "KEY_F13",
+        "KEY_F14",
+        "KEY_F15",
+        "KEY_F17",
+        "KEY_F18",
+        "KEY_F19"
+    }
+
+def generate_random_command() {
+        light = random.choice(commands)
+        return "irsend SEND_ONCE lights " + light
+
+if __name__ == '__main__':
+    while True:
+        length, data = audio.inp.read()
+        a = numpy.fromstring(data, dtype='int16')
+
+        if not recent:
+            if dance(length, a):
+                subprocess.call(generate_random_command())
+                timeout = 0
+                recent = True
+        else:
+            if timeout < audio.RATE * .4:
+                timeout += audio.CHUNK
+            else:
+                recent = False
