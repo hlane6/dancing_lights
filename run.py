@@ -72,14 +72,13 @@ def update_bass_energies(length, data):
 
     points.append(bass)
 
-    if len(points) > 43:
+    if len(points) > 4:
         del points[0]
 
-    return bass
+    return (points[-1] - points[0]) / len(points)
 
-def dance(bass):
-    if (bass > numpy.average(points) * 2):
-        print bass
+def dance(dy):
+    if dy > 50:
         return True
     return False
 
@@ -89,16 +88,17 @@ if __name__ == '__main__':
         
         try:
             a = numpy.fromstring(data, dtype='int16')
-            bass = update_bass_energies(length, a)
-
+            dy = update_bass_energies(length, a)
+          
             if not recent:
-                if dance(bass):
+                print dy
+                if dance(dy):
                     current_light = change_light(current_light)
                     subprocess.call(generate_command(current_light), shell=True)
                     timeout = 0
                     recent = True
             else:
-                if timeout < audio.RATE * .3:
+                if timeout < audio.RATE * .5:
                     timeout += audio.CHUNK
                 else:
                     recent = False
